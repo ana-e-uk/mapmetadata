@@ -1,0 +1,157 @@
+# Create environment (in any platform) with terminal command: 
+  # conda env create -f portable_env.yml
+# Note: some packages are platform specific and are not available for other platforms
+name: mapedia_env
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11 # OSMnx compatibility better than 3.12
+  - osmnx=2.0.1
+  - shapely>=2.0
+  - networkx>=2.8
+  - geopandas
+  - geopy
+  - fiona
+  - pyproj
+  - rtree
+  - matplotlib
+  - numpy
+  - pandas
+  - scipy
+  - scikit-learn
+  - requests
+  - lxml
+  - notebook
+  # - asgiref=3.8.1
+  # - attrs=23.1.0
+  # - blas=1.0
+  # - blosc
+  # - boost-cpp
+  # - bottleneck
+  # - branca
+  # - brotli
+  # - brotli-python
+  # - bzip2
+  # - c-ares
+  # - cairo
+  # - certifi
+  # - cfitsio
+  # - charset-normalizer
+  # - click
+  # - click-plugins
+  # - cligj
+  # - contourpy
+  # - cycler
+  # - django=5.1
+  # - expat
+  # - fiona
+  # - folium
+  # - fontconfig
+  # - fonttools
+  # - freetype
+  # - freexl
+  # - gdal
+  # - geographiclib
+  # - geopandas
+  # - geopy
+  # - geos
+  # - geotiff
+  # - giflib
+  # - glib
+  # - hdf4
+  # - hdf5
+  # - icu
+  # - idna
+  # # - intel-openmp ## not available for osx-arm64
+  # - jinja2
+  # - joblib
+  # - jpeg
+  # - json-c
+  # - kealib
+  # - kiwisolver
+  # - krb5
+  # - lcms2
+  # - lerc
+  # - libboost
+  # - libdeflate
+  # - libiconv
+  # - libkml
+  # - libnetcdf
+  # - libpng
+  # - libpq
+  # - libspatialindex
+  # - libspatialite
+  # - libssh2
+  # - libtiff
+  # - libuuid
+  # - libwebp-base
+  # - libxml2
+  # - libzip
+  # - lz4-c
+  # - mapclassify
+  # - markupsafe
+  # - matplotlib-base
+  # - minizip
+  # ## not available for osx-arm64
+  # # - mkl
+  # # - mkl-service
+  # # - mkl_fft
+  # # - mkl_random
+  # - ncurses
+  # - networkx
+  # - numexpr
+  # - numpy
+  # - openjpeg
+  # - openssl
+  # - packaging
+  # - pandas
+  # - pcre2
+  # - pillow
+  # - pip
+  # - pixman
+  # - poppler
+  # - poppler-data
+  # - proj
+  # - psycopg2
+  # - pyparsing
+  # - pyproj
+  # - pysocks
+  # - python-dateutil
+  # - python-tzdata
+  # - pytz
+  # - qhull
+  # - readline
+  # - requests
+  # - rtree
+  # - scikit-learn
+  # - scipy
+  # - setuptools
+  # - shapely
+  # - six
+  # - sqlalchemy
+  # - sqlite
+  # - sqlparse
+  # - tbb
+  # - threadpoolctl
+  # - tiledb
+  # - tk
+  # - tzdata
+  # - unicodedata2
+  # - uriparser
+  # - urllib3
+  # - wheel
+  # - xerces-c
+  # - xyzservices
+  # - xz
+  # - zlib
+  # - zstd
+  # - django-cors-headers
+  # - djangorestframework
+  # - greenlet
+  # - igraph
+  # # - mappymatch ## not available for osx-arm64
+  # - osmnx
+  # - polyline
+  # - texttable
+  # - typing-extensions

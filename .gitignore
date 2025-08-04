@@ -1,0 +1,63 @@
+# Data files
+data/
+*.csv
+
+# Docker 
+Dockerfile
+*.tar
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# OS or IDE specific
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Virtual environment
+venv/
+.env/
+.env.bak/
+*.env
+
+# Jupyter runtime files
+.jupyter/
+~$*.ipynb
+
+# OSMnx cache & graph files
+*.graphml
+*.osm
+*.sqlite
+*.gpkg
+cache/
+osmnx_cache/
+
+# Parquet files
+*.parquet
+*.pq
+
+# Log and debug files
+*.log
+
+# Pytest / test cache
+.pytest_cache/
+.tox/
+coverage.*
+
+# Build files
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Notebook conversion outputs
+*.nbconvert.ipynb
