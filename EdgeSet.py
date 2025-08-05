@@ -31,7 +31,7 @@ class Edge:
         """Update edge statistics using current point"""
 
         # speed extrema
-        s = cur_p["speed"]
+        s = cur_p[2] # cur_p["speed"]
         self.min_s = min(self.min_s, s)
         self.max_s = max(self.max_s, s)
 
@@ -43,29 +43,26 @@ class Edge:
         self.q3 = np.quantile([self.q3,s],q=0.75)
 
         # max distance used to calculate number of lanes
-        self.max_dist = max(self.max_dist, cur_p["dist"])
+        self.max_dist = max(self.max_dist, cur_p[9])    #cur_p["dist"])
 
         # direction of trajectory
         # check if points are from same trajectory and w/in 2 mins
         if self.prev_p is not None:
-            if cur_p["traj_id"] == self.prev_p["traj_id"]:
-                if(cur_p["timestamp"] - self.prev_p["timestamp"]).total_seconds() < 120:
-                    
+            # if cur_p["traj_id"] == self.prev_p["traj_id"]:
+            if cur_p[0] == self.prev_p[0]:
+                # if(cur_p["timestamp"] - self.prev_p["timestamp"]).total_seconds() < 120:
+                if(cur_p[1] - self.prev_p[1]).total_seconds() < 120:    
                     # compute direction
-                    if cur_p["u_d"] < self.prev_p["u_d"]:
-                        if cur_p["v_d"] > self.prev_p["v_d"]:
+                    if cur_p[7] < self.prev_p[7]:
+                        if cur_p[8] > self.prev_p[8]:
                             self.v_to_u_count += 1
-                            print(f"\tv to u")
                         else:
                             self.u_to_v_count += 1
-                            print(f"\tu to v")
                     else:
-                        if cur_p["v_d"] > self.prev_p["v_d"]:
+                        if cur_p[8] > self.prev_p[8]:
                             self.v_to_u_count += 1
-                            print(f"\tv to u")
                         else:
                             self.u_to_v_count += 1
-                            print(f"u to v")
         self.prev_p = cur_p
 
         # updating number of points for edge
@@ -92,7 +89,7 @@ class Edge:
         self.speed_limit = int((t*10) + 10)
 
 
-class EdgesSet:
+class EdgeSet:
     def __init__(self):
         self.edges = {}  # key: (u, v, k) -> value: Edge object
 
@@ -103,10 +100,11 @@ class EdgesSet:
             - Add edge to set if it is not in it yet
             - Update edge statistics given current point cur_p
         """
-        idx = (cur_p["u"], cur_p["v"], cur_p["k"])
+        # idx = (cur_p["u"], cur_p["v"], cur_p["k"])
+        idx = (cur_p[4], cur_p[5], cur_p[6])
         if idx not in self.edges:
             print("new edge!")
-            self.edges[idx] = Edge(cur_p["u"], cur_p["v"], cur_p["k"])
+            self.edges[idx] = Edge(cur_p[4], cur_p[5], cur_p[6])
         self.edges[idx].update(cur_p)
 
     def get_edge(self, u,v,k):
