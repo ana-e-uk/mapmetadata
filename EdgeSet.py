@@ -7,6 +7,7 @@ class Edge:
         self.u = u
         self.v = v
         self.k = k
+        self.osmid = None
         self.prev_p = None
         self.count = 0
 
@@ -65,6 +66,9 @@ class Edge:
                             self.u_to_v_count += 1
         self.prev_p = cur_p
 
+        if self.osmid == None:
+            self.osmid = cur_p[3]
+
         # updating number of points for edge
         self.count += 1
 
@@ -103,7 +107,6 @@ class EdgeSet:
         # idx = (cur_p["u"], cur_p["v"], cur_p["k"])
         idx = (cur_p[4], cur_p[5], cur_p[6])
         if idx not in self.edges:
-            print("new edge!")
             self.edges[idx] = Edge(cur_p[4], cur_p[5], cur_p[6])
         self.edges[idx].update(cur_p)
 
@@ -122,4 +125,4 @@ class EdgeSet:
         edge.get_expected_speed()
         edge.get_speed_limit()
 
-        return edge.oneway, edge.expected_speed, edge.speed_limit 
+        return edge.osmid, edge.oneway, edge.expected_speed, edge.speed_limit 

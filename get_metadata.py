@@ -34,22 +34,21 @@ def main():
 
     try:
 
-        df = pd.read_csv(args.input)
+        df = pd.read_csv("/Users/bean/Documents/Doctorate/1Research/MapMetadata/mapmetadata/testing/test_osmnx.csv")
         partition = DataPartition(df=df)
         point_data = partition.get_point_info()
-        point_df = pd.DataFrame(point_data, columns=["traj_id", "timestamp", "speed", "osmid", "u", "v", "k", "u_d", "v_d", "dist"])
 
         es = EdgeSet()
-        for p in point_df:
+        for p in point_data:
             es.update_edge(p)
         
         edge_metadata = []
         for e in es.get_all_idx():
-            edge_metadata.append(es.compute_metadata(e["u"], e["v"], e["k"]))
+            edge_metadata.append(es.compute_metadata(e[0], e[1], e[2]))
 
-        edge_metadata_df = pd.DataFrame(edge_metadata)
+        metadata_df = pd.DataFrame(edge_metadata, columns=["id", "inf_oneway_direction", "e_speed", "speed_limit"])
         csv_name = get_outfile_name(args.output)
-        edge_metadata_df.to_csv(csv_name, index=False)
+        metadata_df.to_csv(csv_name, index=False)
 
     except Exception as e:
         print(f"Failed to process the file: {e}")
