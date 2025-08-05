@@ -87,11 +87,11 @@ Points have to be matched to a road, to have all the points in a road you have t
 
 **DONE:**
 * **Driving direction** - direction points are traveling on a road 
-* **Number of lanes** - estimated number of lanes based on the width of a road calculated from the distance of points to the center 
+* **Number of lanes** - estimated number of lanes based on the width of a road calculated from the distance (UNITS km/h) of points to the center 
 * **Point count** - number of points matched to that road
 
 **WORK IN PROGRESS**
-* **Speed info**
+* **Speed info** - UNITS km/h
 * **Possible turns** - list of neighboring edges that points have turned on from each road node
 * **Intersection type** - category of intersection from: *roundabout, controlled, uncontrolled*
 * **Road type** - category of road from: *highway, city, residential*

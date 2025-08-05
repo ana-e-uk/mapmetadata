@@ -45,6 +45,11 @@ class DataPartition:
         dt = pd.to_datetime(col, errors = 'coerce')
         return dt.to_list()
 
+    def dist_btwn_points(self, lat1, lon1, lat2, lon2):
+        """Returns distance in km"""
+        d = ox.distance.great_circle(lat1=lat1, lon1=lon1, lat2=lat2, lon2=lon2, earth_radius=6371.009)
+        return round(d, self.round_to)
+
     def get_time_group_idx(self):
         """
         Return:
@@ -65,6 +70,11 @@ class DataPartition:
         prev_lon = self.longitudes[0]
         prev_timestamp = self.timestamps[0]
 
+        def time_btwn_points(t1, t2):
+            """Returns time in hours"""
+            d = (t2 - t1).total_seconds()
+            return round((d/3600), self.round_to)
+
         for i in range(1, (self.num_points-1)):
 
             cur_id = self.traj_ids[i]
@@ -73,17 +83,8 @@ class DataPartition:
             cur_timestamp = self.timestamps[i]
 
             if cur_id == prev_id:
-                time_diff.append((cur_timestamp - prev_timestamp).total_hours())
-
-                # TODO: check which distance calculation is faster
-                # dist_diff.append(round(np.linalg.norm(np.array([cur_lon, cur_lat], dtype=np.float32) 
-                #                                       - np.array([prev_lon, prev_lat], dtype=np.float32)), 
-                #                        self.round_to))
-
-                dist_diff.append(ox.distance.great_circle(lat1=prev_lat, lon1=prev_lon, lat2=cur_lat, lon2=cur_lon))
-
-                # print(f"TIME D \t{(cur_timestamp - prev_timestamp).total_seconds()}")
-                # print(f"DIST D \t{}")
+                time_diff.append(time_btwn_points(prev_timestamp, cur_timestamp))
+                dist_diff.append(self.dist_btwn_points(lat1=prev_lat, lon1=prev_lon, lat2=cur_lat, lon2=cur_lon))
                 group_time_diff = cur_timestamp - self.timestamps[s]
                 if (group_time_diff > self.max_time_diff):
                     time_group_intervals.append((s,i))
@@ -122,10 +123,8 @@ class DataPartition:
 
             cur_lat = self.latitudes[last_i]
             cur_lon = self.longitudes[last_i]
-            time_diff.append((self.timestamps[last_i] - self.timestamps[i]).total_seconds())
-            dist_diff.append(round(np.linalg.norm(np.array([cur_lon, cur_lat], dtype=np.float32) 
-                                                  - np.array([prev_lon, prev_lat], dtype=np.float32)), 
-                                   self.round_to))
+            time_diff.append(time_btwn_points(self.timestamps[i], self.timestamps[last_i]))
+            dist_diff.append(self.dist_btwn_points(lat1=prev_lat, lon1=prev_lon, lat2=cur_lat, lon2=cur_lon))
 
         indices = [end for _, end in time_group_intervals[:-1]]  #TODO: make this the time_group_idx if we only need these vals   
 
@@ -240,13 +239,8 @@ class DataPartition:
             G = self.get_road_network(self.space_group_mbrs[i])
             e, d = ox.distance.nearest_edges(G, X, Y, return_dist=True)
 
-            u_dist = [round(np.linalg.norm(np.array([G.nodes[row[0]]['x'], G.nodes[row[0]]['y']]) 
-                                           - np.array([x, y])), 
-                            self.round_to) for row, x, y in zip(e, X, Y)]
-            
-            v_dist = [round(np.linalg.norm(np.array([G.nodes[row[1]]['x'], G.nodes[row[1]]['y']]) 
-                                           - np.array([x, y])), 
-                            self.round_to) for row, x, y in zip(e, X, Y)]
+            u_dist = [(self.dist_btwn_points(lat1=y, lon1=x, lat2=G.nodes[row[0]]['y'], lon2=G.nodes[row[0]]['x'])) for row, x, y in zip(e, X, Y)]
+            v_dist = [(self.dist_btwn_points(lat1=y, lon1=x, lat2=G.nodes[row[1]]['y'], lon2=G.nodes[row[1]]['x'])) for row, x, y in zip(e, X, Y)]
 
             edges.append(e)
             distances.append(d)
@@ -259,7 +253,6 @@ class DataPartition:
         u_dist_list = np.concatenate(u_distances).tolist()
         v_dist_list = np.concatenate(v_distances).tolist()
         indices_list = np.hstack(indices).tolist()
-
 
         paired_e = list(zip(indices_list, edges_list))
         sorted_edges = [value for _, value in paired_e]
@@ -285,5 +278,5 @@ class DataPartition:
         """
         edges, distances, u_dist, v_dist = self.map_match()
         s, d, k = zip(*edges)
-        base_df = np.stack([self.traj_ids, self.speeds, s, d, k, u_dist, v_dist, distances]).transpose()
+        base_df = np.stack([self.traj_ids, self.timestamps, self.speeds, s, d, k, u_dist, v_dist, distances]).transpose()
         return base_df
