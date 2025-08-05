@@ -232,7 +232,9 @@ class DataPartition:
         distances = []
         u_distances = []
         v_distances = []
+        osmids = []
         indices = []    # original point indices in order of space group
+
         for i in range(self.k):
 
             Y, X, all_t_idx_for_s = self.get_all_space_group_points(i)
@@ -242,16 +244,26 @@ class DataPartition:
             u_dist = [(self.dist_btwn_points(lat1=y, lon1=x, lat2=G.nodes[row[0]]['y'], lon2=G.nodes[row[0]]['x'])) for row, x, y in zip(e, X, Y)]
             v_dist = [(self.dist_btwn_points(lat1=y, lon1=x, lat2=G.nodes[row[1]]['y'], lon2=G.nodes[row[1]]['x'])) for row, x, y in zip(e, X, Y)]
 
+            e_gdfs = ox.convert.graph_to_gdfs(G, nodes=False, edges = True)
+            ids = [e_gdfs.loc[row]['osmid'] for row in e]
+
+
+            
+            # edges.loc[( 270672090,  3483658791, 0)]['osmid']
+
+
             edges.append(e)
             distances.append(d)
             u_distances.append(u_dist)
             v_distances.append(v_dist)
+            osmids.append(ids)
             indices.append(all_t_idx_for_s)
 
         edges_list = np.hstack(edges).tolist()
         distance_list = np.hstack(distances).tolist()
         u_dist_list = np.concatenate(u_distances).tolist()
         v_dist_list = np.concatenate(v_distances).tolist()
+        osmids_list = np.concatenate(osmids).tolist()
         indices_list = np.hstack(indices).tolist()
 
         paired_e = list(zip(indices_list, edges_list))
@@ -266,7 +278,10 @@ class DataPartition:
         paired_v_dists = list(zip(indices_list, v_dist_list))
         sorted_v_dists = [value for _, value in paired_v_dists]
 
-        return sorted_edges, sorted_distances, sorted_u_dists, sorted_v_dists
+        paired_ids = list(zip(indices_list, osmids_list))
+        sorted_osmids = [value for _, value in paired_ids]
+
+        return sorted_edges, sorted_distances, sorted_u_dists, sorted_v_dists, sorted_osmids
     
     def get_point_info(self):
         """
@@ -276,7 +291,7 @@ class DataPartition:
             Currently array only has trajector id, speed, edge, 
             and distance from edge of each point
         """
-        edges, distances, u_dist, v_dist = self.map_match()
-        s, d, k = zip(*edges)
-        base_df = np.stack([self.traj_ids, self.timestamps, self.speeds, s, d, k, u_dist, v_dist, distances]).transpose()
+        edges, distances, u_dist, v_dist, osmids = self.map_match()
+        u, v, k = zip(*edges)
+        base_df = np.stack([self.traj_ids, self.timestamps, self.speeds, osmids, u, v, k, u_dist, v_dist, distances]).transpose()
         return base_df

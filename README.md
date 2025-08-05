@@ -22,6 +22,7 @@
     * --geometry: 'point' if coordinates are in rows or 'linestring' if coordinates are in linestring object
     * --lat: latitude column name or index of latitude coordinate (0 or 1)
     * --long: longitude column name or index of longitude coordinate (0 or 1)
+    * --output: optional directory path of the output file
     
 2. Data is standardized to have the same column names: **traj_id, latitude, longitude, timestamp**, be in a trajectory point format, where each row is a point in a trajectory, and are all saved as a .csv file.
 
@@ -33,10 +34,11 @@ TODO:
 
 1. In terminal, run:
     
-        python get_metadata.py --input
+        python get_metadata.py --input --output
     
     where
     * --input: the directory path of the standardized file
+    * --output: opitonal directory path of the output file
 
 2. The metadata will be computed as follows using the points in the file:
     * Using the **DataPartition** class:
