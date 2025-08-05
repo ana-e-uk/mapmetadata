@@ -54,6 +54,7 @@ TODO:
 * rewrite functions that take too much time
 * figure out best place to project points and graph
 * check distance from edge returned by **nearest_edges** is perpendicular distance to edge
+* check distance between points is correct unit
 * make get_metadata start after standardization is done (maybe just call it when standardization is done so you don't have to be constantly checking for new files)
 
 ### Visualize Metadata

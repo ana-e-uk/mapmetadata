@@ -30,7 +30,8 @@ def main():
             es.update_edge(p)
         
         for e in es.get_all_idx():
-            es.compute_metadata(e["u"], e["v"], e["k"])
+            e_metadata = es.compute_metadata(e["u"], e["v"], e["k"])
+            
 
     except Exception as e:
         print(f"Failed to process the file: {e}")

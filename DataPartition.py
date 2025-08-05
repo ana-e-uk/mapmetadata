@@ -73,10 +73,15 @@ class DataPartition:
             cur_timestamp = self.timestamps[i]
 
             if cur_id == prev_id:
-                time_diff.append((cur_timestamp - prev_timestamp).total_seconds())
-                dist_diff.append(round(np.linalg.norm(np.array([cur_lon, cur_lat], dtype=np.float32) 
-                                                      - np.array([prev_lon, prev_lat], dtype=np.float32)), 
-                                       self.round_to))
+                time_diff.append((cur_timestamp - prev_timestamp).total_hours())
+
+                # TODO: check which distance calculation is faster
+                # dist_diff.append(round(np.linalg.norm(np.array([cur_lon, cur_lat], dtype=np.float32) 
+                #                                       - np.array([prev_lon, prev_lat], dtype=np.float32)), 
+                #                        self.round_to))
+
+                dist_diff.append(ox.distance.great_circle(lat1=prev_lat, lon1=prev_lon, lat2=cur_lat, lon2=cur_lon))
+
                 # print(f"TIME D \t{(cur_timestamp - prev_timestamp).total_seconds()}")
                 # print(f"DIST D \t{}")
                 group_time_diff = cur_timestamp - self.timestamps[s]

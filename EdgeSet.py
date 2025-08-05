@@ -24,6 +24,8 @@ class Edge:
 
         # METADATA
         self.oneway = True
+        self.expected_speed = None
+        self.speed_limit = None
 
     def update(self, cur_p):
         """Update edge statistics using current point"""
@@ -78,7 +80,15 @@ class Edge:
             print(f"\t\toneway should be False")
             self.oneway = False
         return
+
+    def get_expected_speed(self):
+        """Returns expected speed = q2"""
+        return self.q2
+
+    def get_speed_limit(self):
+        """Return guess of legal speed limit"""
         
+
 class EdgesSet:
     def __init__(self):
         self.edges = {}  # key: (u, v, k) -> value: Edge object
@@ -104,5 +114,8 @@ class EdgesSet:
         return self.edges.keys()
     
     def compute_metadata(self, u, v, k):
+        
+        edge = self.edges[(u,v,k)]
+        edge.get_oneway()
 
-        self.edges[(u, v, k)].get_oneway()
+        return edge.oneway
