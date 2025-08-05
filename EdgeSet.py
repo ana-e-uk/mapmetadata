@@ -33,7 +33,7 @@ class Edge:
         # speed extrema
         s = cur_p["speed"]
         self.min_s = min(self.min_s, s)
-        self.max_s = min(self.max_s, s)
+        self.max_s = max(self.max_s, s)
 
         # speed quantiles
         #   computed using previous quantile value and new speed value
@@ -74,20 +74,23 @@ class Edge:
     def get_oneway(self):
         """Use u to v/ v to u counts to determine if edge is a oneway"""
         if (self.u_to_v_count == 0) or (self.v_to_u_count == 0):
-            print(f"\t\toneway should be True")
             assert self.oneway == True
         else:
-            print(f"\t\toneway should be False")
             self.oneway = False
         return
 
     def get_expected_speed(self):
-        """Returns expected speed = q2"""
-        return self.q2
+        """Expected speed = q2"""
+        self.expected_speed= round(self.q2,3)
 
     def get_speed_limit(self):
-        """Return guess of legal speed limit"""
-        
+        """
+        Return guess of legal speed limit
+            Guess: the closest multiple of ten greater than the maximum speed observed
+        """
+        t = np.trunc(self.max_s/10)
+        self.speed_limit = int((t*10) + 10)
+
 
 class EdgesSet:
     def __init__(self):
@@ -116,6 +119,9 @@ class EdgesSet:
     def compute_metadata(self, u, v, k):
         
         edge = self.edges[(u,v,k)]
-        edge.get_oneway()
 
-        return edge.oneway
+        edge.get_oneway()
+        edge.get_expected_speed()
+        edge.get_speed_limit()
+
+        return edge.oneway, edge.expected_speed, edge.speed_limit 
