@@ -23,7 +23,8 @@ dependencies:
   - requests
   - lxml
   - notebook
-  - psycopg2    # added for driver
+  - psycopg2    # added for driver.py
+  - pyarrow>=13.0.0,<15.0.0   # added for parquet support
   # - asgiref=3.8.1
   # - attrs=23.1.0
   # - blas=1.0

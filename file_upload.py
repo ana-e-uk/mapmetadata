@@ -76,7 +76,7 @@ def validate_columns(df, df_columns, user_columns, geom, file_out=None, linestri
         df_standardized.to_csv(csv_name, index=False)
         return csv_name
 
-def read_file(file_path, filetype="csv", compression=None):
+def read_file(file_path, filetype='csv', compression=None):
     """Read the file using pandas based on file type."""
     if filetype == 'csv':
         return pd.read_csv(file_path, compression=compression)
@@ -84,13 +84,12 @@ def read_file(file_path, filetype="csv", compression=None):
         return pd.read_excel(file_path)
     elif filetype == 'json':
         return pd.read_json(file_path)
-    elif filetype == "paquet":
+    elif filetype == "parquet":
         return pd.read_parquet(file_path)
     elif filetype == "feather":
         return pd.read_feather(file_path)
     else:
-        print(f"{file_path}")
-        raise ValueError(f"Unsupported file type: {filetype}")
+        raise ValueError(f"Unsupported file type: {filetype} for file \n\t{file_path}")
 
 def main():
     parser = argparse.ArgumentParser(description="Process a file and validate columns.")

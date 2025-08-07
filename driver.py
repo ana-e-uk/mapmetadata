@@ -15,6 +15,7 @@ interim = subprocess.run([
 
 print("STDOUT:", interim.stdout)
 print("STDERR:", interim.stderr)
+print(f"\n\n% % % % % % % % % % %\n")
 
 # Compute metadata
 result = subprocess.run([

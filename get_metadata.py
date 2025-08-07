@@ -33,7 +33,6 @@ def main():
     args = parser.parse_args()
 
     try:
-        print(f"\n% % % % % % % % % % %")
         df = pd.read_csv(args.input)
         start_time = time.time()
         partition = DataPartition(df=df)
@@ -51,7 +50,8 @@ def main():
         metadata_df = pd.DataFrame(edge_metadata, columns=["id", "inf_oneway_direction", "e_speed", "speed_limit"])
         csv_name = get_outfile_name(args.output)
         metadata_df.to_csv(csv_name, index=False)
-        print(f"GET METADATA TIMES:\n\tinitialize partition: {partition_time - start_time}\tget point data: {partition_2_time - start_time} \tTOTAL: {partition_2_time - start_time}\n\tedge update per point: {edge_time - partition_2_time}\n\tmetadata for edges: {metadata_time - edge_time}\n")
+        print(f"GET METADATA TIMES:\n\tinitialize partition: {partition_time - start_time}\tget point data: {partition_2_time - partition_time} \t(total): {partition_2_time - start_time}\n\tedge update: {edge_time - partition_2_time}\n\tmetadata for edges: {metadata_time - edge_time}\n")
+        print(f"\tTOTAL: minutes {round((metadata_time - start_time)/60, 3)}")
         print(f"\n############################ END ################################")
     except Exception as e:
         print(f"Failed to process the file: {e}")
