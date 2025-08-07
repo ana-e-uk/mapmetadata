@@ -31,11 +31,11 @@ def validate_columns(df, df_columns, user_columns, geom, file_out=None, linestri
         col_lat = user_columns[2]
         col_long = user_columns[3]
 
-        try:
-            pd.to_datetime(df[col_t], errors='coerce')    # checking timestamps are date times
-        except:
-            print(f"Error: the values in the timestamp column could not be converted to date times")
-            sys.exit(1)
+        # try:
+        #     pd.to_datetime(df[col_t], errors='coerce')    # checking timestamps are date times
+        # except:
+        #     print(f"Error: the values in the timestamp column could not be converted to date times")
+        #     sys.exit(1)
         if geom == "point":
             if df[col_lat].astype(float).all(): pass    # latitude values are floats
             else:
@@ -166,9 +166,14 @@ def main():
     args = parser.parse_args()
 
     try:
+        print(f"\n############################ START ################################")
+        start_time = time.time()
         df = read_file(args.input, args.filetype, args.compression)
+        read_time = time.time()
         temp_file_name = validate_columns(df=df, df_columns=df.columns.tolist(), user_columns=[args.id, args.t, args.lat, args.long], geom=args.geometry, file_out=args.output)
+        val_col_time = time.time()
         check_file_saved(temp_file_name)
+        print(f"FILE UPLOAD TIMES\n\tread in file: {read_time - start_time}\n\tvalidate cols: {val_col_time - read_time}")
     except Exception as e:
         print(f"Failed to process the file: {e}")
         sys.exit(1)

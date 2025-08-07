@@ -34,7 +34,7 @@ def main():
 
     try:
 
-        df = pd.read_csv("/Users/bean/Documents/Doctorate/1Research/MapMetadata/mapmetadata/testing/test_osmnx.csv")
+        df = pd.read_csv(args.input)
         partition = DataPartition(df=df)
         point_data = partition.get_point_info()
 

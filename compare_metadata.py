@@ -6,12 +6,7 @@ df = pd.read_csv('data/jakarta_inf_metadata.csv')
 
 # %%
 df.head()
-# %%
-df.drop(columns = ['OSM_length', 'OSM_lanes', 'OSM_name', 'OSM_highway', 'OSM_maxspeed'], inplace=True)
 
-# %%
-# df[df['osmid'].apply(lambda x: '[' in x)]
-df.head()
 # %%
 def resolve_oneway(group):
     if False in group.values:
@@ -23,8 +18,6 @@ def resolve_oneway(group):
 # Group by 'osmid' and apply logic to 'oneway'
 result = df.groupby('osmid')['Oneway'].apply(resolve_oneway).reset_index()
 
-# %%
-result.rename(columns={'osmid': 'id', 'Oneway': 'inf_oneway_direction'}, inplace=True)
 
 # %%
 result.head()
