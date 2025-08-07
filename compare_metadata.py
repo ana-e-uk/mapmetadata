@@ -1,7 +1,7 @@
 # %%
 import pandas as pd
 
-df = pd.read_csv('data/jakarta_inf_metadata.csv')
+df = pd.read_csv('/home/spatialuser/uribe/mapmetadata/jakarta2_inf_metadata.csv')
 
 
 # %%
@@ -55,6 +55,21 @@ WHERE roads.id = data.id;
 execute_values(cur, query, data)
 
 conn.commit()
+
+query2 = """
+SELECT 
+    COUNT(CASE 
+            WHEN osm_oneway_direction = inf_oneway_direction THEN 1 
+         END) * 1.0 
+    / COUNT(*) AS accuracy
+FROM roads
+WHERE inf_oneway_direction IS NOT NULL;
+"""
+
+cur.execute(query2)
+result = cur.fetchone()
+print("Accuracy:", result[0])
+
 cur.close()
 conn.close()
 # %%
@@ -66,16 +81,16 @@ def resolve_oneway_osm(group):
     else:
         return None
 
-agg_result = df.groupby('osmid').agg({
-    'Oneway': resolve_oneway,
-    'OSM_oneway': resolve_oneway_osm
-}).reset_index()
+# agg_result = df.groupby('osmid').agg({
+#     'Oneway': resolve_oneway,
+#     'OSM_oneway': resolve_oneway_osm
+# }).reset_index()
 
 
-# %%
-agg_result
+# # %%
+# agg_result
 
-# %%
-accuracy = (df['Oneway'] == df['OSM_oneway']).mean()
-print(f"Accuracy: {accuracy:.4f}")
-# %%
+# # %%
+# accuracy = (df['Oneway'] == df['OSM_oneway']).mean()
+# print(f"Accuracy: {accuracy:.4f}")
+# # %%

@@ -8,7 +8,7 @@ from DataPartition import DataPartition
 from EdgeSet import EdgeSet
 
 def get_outfile_name(file_out):
-    if file_out != None:
+    if file_out is not None:
         return file_out
     else:
         timestr = time.strftime("%Y%m%d-%H%M%S")
@@ -52,7 +52,7 @@ def main():
         metadata_df.to_csv(csv_name, index=False)
         print(f"GET METADATA TIMES:\n\tinitialize partition: {partition_time - start_time}\tget point data: {partition_2_time - partition_time} \t(total): {partition_2_time - start_time}\n\tedge update: {edge_time - partition_2_time}\n\tmetadata for edges: {metadata_time - edge_time}\n")
         print(f"\tTOTAL: minutes {round((metadata_time - start_time)/60, 3)}")
-        print(f"\n############################ END ################################")
+        print("\n############################ END ################################")
     except Exception as e:
         print(f"Failed to process the file: {e}")
         sys.exit(1)

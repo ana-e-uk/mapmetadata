@@ -9,8 +9,8 @@ def check_file_saved(file_name):
     """Verify the csv file that was saved exists."""
     try:
         os.path.isfile(file_name)
-    except:
-        print(f"Error: The file was not saved correctly and does not exist. Please upload again.")
+    except Exception as e:
+        print(f"Error: The file was not saved correctly and does not exist. Please upload again.\nError: {e}")
         sys.exit(1) # Exit with error code
     
 
@@ -37,22 +37,26 @@ def validate_columns(df, df_columns, user_columns, geom, file_out=None, linestri
         #     print(f"Error: the values in the timestamp column could not be converted to date times")
         #     sys.exit(1)
         if geom == "point":
-            if df[col_lat].astype(float).all(): pass    # latitude values are floats
+            if df[col_lat].astype(float).all(): 
+                pass    # latitude values are floats
             else:
-                print(f"Error: Latitude column data type is not float")
+                print("Error: Latitude column data type is not float")
                 sys.exit(1)
-            if df[col_long].astype(float).all(): pass    # longitude values are floats
+            if df[col_long].astype(float).all(): 
+                pass    # longitude values are floats
             else:
-                print(f"Error: Longitude column data type is not float")
+                print("Error: Longitude column data type is not float")
                 sys.exit(1)
         else:   
-            if isinstance(df[linestring_col][0][int(col_lat)], float): pass # lat values are floats
+            if isinstance(df[linestring_col][0][int(col_lat)], float): 
+                pass # lat values are floats
             else:
-                print(f"Error: Latitude column data type is not float")
+                print("Error: Latitude column data type is not float")
                 sys.exit(1)
-            if isinstance(df[linestring_col][0][int(col_long)], float): pass # long values are floats
+            if isinstance(df[linestring_col][0][int(col_long)], float): 
+                pass # long values are floats
             else:
-                print(f"Error: Latitude column data type is not float")
+                print("Error: Latitude column data type is not float")
                 sys.exit(1)
             #TODO: turn trajectory csv into point csv
             # x,y = LineString.coords.xy
@@ -67,7 +71,7 @@ def validate_columns(df, df_columns, user_columns, geom, file_out=None, linestri
         
         df_standardized = df.rename(columns=standardize_names)
         df_standardized = df_standardized[['traj_id', 'timestamp', 'latitude', 'longitude']]
-        if file_out != None:
+        if file_out is not None:
             csv_name = file_out
         else:
             timestr = time.strftime("%Y%m%d-%H%M%S")
@@ -166,7 +170,7 @@ def main():
     args = parser.parse_args()
 
     try:
-        print(f"\n############################ START ################################")
+        print("\n############################ START ################################")
         start_time = time.time()
         df = read_file(args.input, args.filetype, args.compression)
         read_time = time.time()
