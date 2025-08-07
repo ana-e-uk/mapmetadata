@@ -89,6 +89,7 @@ def read_file(file_path, filetype="csv", compression=None):
     elif filetype == "feather":
         return pd.read_feather(file_path)
     else:
+        print(f"{file_path}")
         raise ValueError(f"Unsupported file type: {filetype}")
 
 def main():
