@@ -1,26 +1,10 @@
-import psycopg2
-from psycopg2.extras import execute_values
 import subprocess
-
-# Connect to DB
-print("--------------------\n--------------------\n--------------------\n--------------------Starting...")
-conn = psycopg2.connect(
-    dbname="gis",
-    user="gis",
-    password="gis",
-    host="cs-u-spatial-406.cs.umn.edu",  # or wherever your DB is hosted
-    port=5432
-)
-cur = conn.cursor()
-print("\tConnection established")
-
-
 
 # Standardize file
 interim = subprocess.run([
     "python", "file_upload.py",
     "--filetype", "parquet",
-    "--input", "data/Jakarta_subset3.parquet",
+    "--input", "/home/spatialuser/websites/openmetadata/modules/MetadataInference/data/Jakarta_subset2.parquet",
     "--id", "trj_id",
     "--t", "pingtimestamp",
     "--geometry", "point",
