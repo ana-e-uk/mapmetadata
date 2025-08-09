@@ -66,7 +66,7 @@ class Edge:
                             self.u_to_v_count += 1
         self.prev_p = cur_p
 
-        if self.osmid == None:
+        if self.osmid is None:
             self.osmid = cur_p[3]
 
         # updating number of points for edge
@@ -75,7 +75,7 @@ class Edge:
     def get_oneway(self):
         """Use u to v/ v to u counts to determine if edge is a oneway"""
         if (self.u_to_v_count == 0) or (self.v_to_u_count == 0):
-            assert self.oneway == True
+            assert self.oneway
         else:
             self.oneway = False
         return

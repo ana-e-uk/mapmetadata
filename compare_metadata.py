@@ -94,3 +94,19 @@ def resolve_oneway_osm(group):
 # accuracy = (df['Oneway'] == df['OSM_oneway']).mean()
 # print(f"Accuracy: {accuracy:.4f}")
 # # %%
+
+query = """
+SELECT id, osm_oneway_direction, inf_oneway_direction
+FROM your_table
+WHERE inf_oneway_direction IS NOT NULL;
+"""
+
+df_db = pd.read_sql_query(query, conn)
+conn.close()
+
+# Assuming you already have your main DataFrame (df_main)
+# Merge on 'id' column
+df_merged = pd.merge(df_main, df_db, on='id', how='left')
+
+# Now df_merged contains both original and joined data
+print(df_merged.head())
