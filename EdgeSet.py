@@ -30,7 +30,8 @@ class Edge:
 
     def update(self, cur_p):
         """Update edge statistics using current point"""
-
+        # [self.traj_ids, self.timestamps, self.speeds, osmid, hway, maxspeed, oneway, lanes, u, v, k, u_dist, v_dist, distances]
+        
         # speed extrema
         s = cur_p[2] # cur_p["speed"]
         self.min_s = min(self.min_s, s)
@@ -44,7 +45,7 @@ class Edge:
         self.q3 = np.quantile([self.q3,s],q=0.75)
 
         # max distance used to calculate number of lanes
-        self.max_dist = max(self.max_dist, cur_p[9])    #cur_p["dist"])
+        self.max_dist = max(self.max_dist, cur_p[13])    #cur_p["dist"])
 
         # direction of trajectory
         # check if points are from same trajectory and w/in 2 mins
