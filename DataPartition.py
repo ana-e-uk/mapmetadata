@@ -48,7 +48,11 @@ class DataPartition:
         """Returns distance in km"""
         d = ox.distance.great_circle(lat1=lat1, lon1=lon1, lat2=lat2, lon2=lon2, earth_radius=6371.009)
         return round(d, self.round_to)
-
+    
+    def check_reasonable_speed(self, d_t):
+        """Replace point speed by 180 if computed speed is greater than 180km/h"""
+        return [180 if v > 180 else v for v in d_t]
+        
     def get_time_group_idx(self):
         """
         Return:
@@ -70,9 +74,8 @@ class DataPartition:
         prev_timestamp = self.timestamps[0]
 
         def time_btwn_points(t1, t2):
-            """Returns time in hours"""
-            d = (t2 - t1).total_seconds()
-            return round((d/3600), self.round_to)
+            """Returns time in seconds"""
+            return (t2 - t1).total_seconds()
 
         for i in range(1, (self.num_points-1)):
 
@@ -127,10 +130,12 @@ class DataPartition:
 
         indices = [end for _, end in time_group_intervals[:-1]]  #TODO: make this the time_group_idx if we only need these vals   
 
-        dt = [d/t for d, t in zip(dist_diff,time_diff)]
+        dt = [(d/t)*3600 for d, t in zip(dist_diff,time_diff)] # km/sec --> km/hr
         dt.append(dt[-1])   # last two points have the same value
 
-        return indices, time_intervals_expanded, dt
+        dt_reasonable = self.check_reasonable_speed(dt)
+
+        return indices, time_intervals_expanded, dt_reasonable
     
     def get_extrema(self):
         """

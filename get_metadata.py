@@ -39,9 +39,7 @@ def main():
     partition_time = time.time()
     point_data = partition.get_point_info()
     partition_2_time = time.time()
-    # import numpy as np
-    # # pd.DataFrame(point_data).to_csv("partition_data.csv", index=False)
-    # point_data = np.array(pd.read_csv("partition_data.csv"))
+    
     es = EdgeSet()
     for p in point_data:
         es.create_edge(p)
