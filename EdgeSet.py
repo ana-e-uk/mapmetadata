@@ -116,7 +116,8 @@ class EdgeSet:
         """
         # idx = (cur_p["u"], cur_p["v"], cur_p["k"])
         idx = (cur_p[8], cur_p[9], cur_p[10])
-        if idx not in self.edges:
+        print(f"edge keys: {self.edges.keys}\n")
+        if idx not in self.edges.keys:
             self.edges[idx] = Edge(cur_p[8], cur_p[9], cur_p[10])
         self.edges[idx].update(cur_p)
 

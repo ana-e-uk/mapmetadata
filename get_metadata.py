@@ -41,7 +41,7 @@ def main():
         partition_2_time = time.time()
 
         es = EdgeSet()
-        for p in point_data: 
+        for p in point_data:
             es.create_edge(p)
         edge_time = time.time()
 
