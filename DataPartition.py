@@ -9,7 +9,7 @@ class DataPartition:
 
         # CONFIGS
         self.max_time_diff = pd.Timedelta(minutes=2)
-        self.k = 4
+        self.k = 2
         self.network_type = 'drive'
         self.buffer = 0.0005    # 50m buffer
         self.round_to = 6
@@ -75,7 +75,7 @@ class DataPartition:
 
         def time_btwn_points(t1, t2):
             """Returns time in seconds"""
-            return (t2 - t1).total_seconds()
+            return round((t2 - t1).total_seconds(), self.round_to)
 
         for i in range(1, (self.num_points-1)):
 
@@ -135,8 +135,8 @@ class DataPartition:
 
         dt_reasonable = self.check_reasonable_speed(dt)
 
-        print(f"\n\tGET_TIME_GROUP_IDX\ndt: {dt}")
-        print(f"dt_reasonable: {dt_reasonable}")
+        print(f"\n\tGET_TIME_GROUP_IDX\ndt: {dt[:10]}")
+        print(f"dt_reasonable: {dt_reasonable[:10]}")
         return indices, time_intervals_expanded, dt_reasonable
     
     def get_extrema(self):

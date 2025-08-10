@@ -8,6 +8,7 @@ class Edge:
         self.u = u
         self.v = v
         self.k = k
+        self.round_to = 2
 
         self.osmid = None
         self.osm_hway = None
@@ -53,9 +54,9 @@ class Edge:
         # speed quantiles
         #   computed using previous quantile value and new speed value
         #   this got similar results to updating using the min and max alongise points
-        self.q1 = np.quantile([self.q1,s],q=0.25)
-        self.q2 = np.quantile([self.q2,s],q=0.5)
-        self.q3 = np.quantile([self.q3,s],q=0.75)
+        self.q1 = round(np.quantile([self.q1,s],q=0.25), self.round_to)
+        self.q2 = round(np.quantile([self.q2,s],q=0.5), self.round_to)
+        self.q3 = round(np.quantile([self.q3,s],q=0.75), self.round_to)
 
         # max distance used to calculate number of lanes
         self.max_dist = max(self.max_dist, cur_p[13])    #cur_p["dist"])
@@ -107,7 +108,7 @@ class Edge:
         self.osm_oneway = Counter(self.osm_oneway_l).most_common(1)[0][0]
         self.osm_lanes = Counter(self.osm_lanes_l).most_common(1)[0][0]
 
-        print(f"\n\tGET_OSM_CONSENSUS:\nosmid list: {np.unique(self.osm_osm_l)}")
+        print(f"\n\tGET_OSM_CONSENSUS:\nosmid list: {np.unique(self.osmid_l)}")
         print(f"\nosm highway list: {np.unique(self.osm_hway_l)}")
         print(f"\nosm maxspeed list: {np.unique(self.osm_maxspeed_l)}")
         print(f"\nosm oneway list: {np.unique(self.osm_oneway_l)}")
@@ -125,7 +126,7 @@ class Edge:
 
     def get_expected_speed(self):
         """Expected speed = q2"""
-        self.inf_expected_speed= round(self.q2,3)
+        self.inf_expected_speed= self.q2
 
     def get_speed_limit(self):
         """
@@ -179,8 +180,7 @@ class EdgeSet:
 
     def get_all_idx(self):
         """Return all edge keys."""
-        print(f"\n\tGET_ALL_IDX:\nself.edges.keys(): {self.edges.keys()}")
-        return self.edges.keys()
+        return np.unique(self.edges.keys())
 
     def compute_metadata(self, u, v, k):
         """Compute and return metadata for a given edge."""
