@@ -1,4 +1,5 @@
 import numpy as np
+from collections import Counter
 
 class Edge:
     def __init__(self, u, v, k):
@@ -13,6 +14,12 @@ class Edge:
         self.osm_maxspeed = np.nan
         self.osm_oneway = None
         self.osm_lanes = np.nan
+
+        self.osmid_l = []
+        self.osm_hway_l = []
+        self.osm_maxspeed_l = []
+        self.osm_oneway_l = []
+        self.osm_lanes_l = []
 
         self.prev_p = None
         self.count = 0
@@ -69,18 +76,36 @@ class Edge:
                             self.v_to_u_count += 1
                         else:
                             self.u_to_v_count += 1
-        if self.osmid is None:
-            self.osmid = cur_p[3]
-        if self.osm_hway is None:
-            self.osm_hway = cur_p[4]
-            self.osm_maxspeed = cur_p[5]
-            self.osm_oneway = cur_p[6]
-            self.osm_lanes = cur_p[7]
+
+        self.osmid_l.append(cur_p[3])
+        self.osm_hway_l.append(cur_p[4])
+        self.osm_maxspeed_l.append(cur_p[5])
+        self.osm_oneway_l.append(cur_p[6])
+        self.osm_lanes_l.append(cur_p[7])
+
+        # if self.osmid is None:
+        #     self.osmid = cur_p[3]
+        # if self.osm_hway is None:
+        #     self.osm_hway = cur_p[4]
+        # if self.osm_maxspeed == np.nan:
+        #     self.osm_maxspeed = cur_p[5]
+        # if self.osm_oneway is None:
+        #     self.osm_oneway = cur_p[6]
+        # if self.osm_lanes == np.nan:
+        #     self.osm_lanes = cur_p[7]
 
         self.prev_p = cur_p
 
         # updating number of points for edge
         self.count += 1
+    
+    def get_osm_consensus(self):
+        """Return majority osm values as final osm values"""
+        self.osmid = Counter(self.osmid_l).most_common(1)[0][0]
+        self.osm_hway = Counter(self.osm_hway_l).most_common(1)[0][0]
+        self.osm_maxspeed = Counter(self.osm_maxspeed_l).most_common(1)[0][0]
+        self.osm_oneway = Counter(self.osm_oneway_l).most_common(1)[0][0]
+        self.osm_lanes = Counter(self.osm_lanes_l).most_common(1)[0][0]
 
     def get_oneway(self):
         """Use u to v/ v to u counts to determine if edge is a oneway"""
@@ -98,8 +123,12 @@ class Edge:
         """
         Return guess of legal speed limit
             Guess: the closest multiple of ten greater than the maximum speed observed
+            Check: if the max value observed is 40km or greater than q3 value, use q3 value as max
         """
-        t = np.trunc(self.max_s/10)
+        if (self.max_s - self.q3) >= 40:
+            t = np.trunc(self.q3/10)
+        else:
+            t = np.trunc(self.max_s/10)
         self.inf_speed_limit = int((t*10) + 10)
 
     def get_number_of_lanes(self):
@@ -147,6 +176,7 @@ class EdgeSet:
     def compute_metadata(self, u, v, k):
         """Compute and return metadata for a given edge."""
         cur_e = self.edges[(u, v, k)]
+        cur_e.get_osm_consensus()
         cur_e.get_oneway()
         cur_e.get_expected_speed()
         cur_e.get_speed_limit()
@@ -168,7 +198,7 @@ class EdgeSet:
             cur_e.max_s,
             cur_e.q1,
             cur_e.q2,
-            cur_e.q3,
+            cur_e.q3
         )
 
 
