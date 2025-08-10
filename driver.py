@@ -1,4 +1,5 @@
 import subprocess
+import time
 
 # Standardize file
 # interim = subprocess.run([
@@ -17,11 +18,12 @@ import subprocess
 # print("STDERR:", interim.stderr)
 print("\n\n% % % % % % % % % % %\n")
 
+time_str = time.strftime("%Y%m%d-%H%M%S")
 # Compute metadata
 result = subprocess.run([
     "python", "get_metadata.py",
     "--input", "jakarta_mini_standardized.csv",
-    "--output", "jakarta_mini_inf_metadata.csv"
+    "--output", f"jakarta_mini_inf_metadata_{time_str}.csv"
 ], capture_output=True, text=True)
 
 print("STDOUT:", result.stdout)

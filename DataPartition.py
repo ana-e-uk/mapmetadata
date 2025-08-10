@@ -135,8 +135,6 @@ class DataPartition:
 
         dt_reasonable = self.check_reasonable_speed(dt)
 
-        print(f"\n\tGET_TIME_GROUP_IDX\ndt: {dt[:10]}")
-        print(f"dt_reasonable: {dt_reasonable[:10]}")
         return indices, time_intervals_expanded, dt_reasonable
     
     def get_extrema(self):

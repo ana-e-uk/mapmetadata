@@ -180,7 +180,7 @@ class EdgeSet:
 
     def get_all_idx(self):
         """Return all edge keys."""
-        return np.unique(self.edges.keys())
+        return self.edges.keys()
 
     def compute_metadata(self, u, v, k):
         """Compute and return metadata for a given edge."""
