@@ -51,7 +51,7 @@ def main():
     for e in es.get_all_idx():
         edge_metadata.append(es.compute_metadata(e[0], e[1], e[2]))
     metadata_time = time.time()
-    metadata_df = pd.DataFrame(edge_metadata, columns=["osmid", "inf_oneway", "osm_oneway", "inf_exp_speed", "inf_speed_limit", "osm_maxspeed"])
+    metadata_df = pd.DataFrame(edge_metadata, columns=["u", "v", "k", "osmid", "inf_oneway", "osm_oneway", "inf_exp_speed", "inf_speed_limit", "osm_maxspeed"])
     csv_name = get_outfile_name(args.output)
     metadata_df.to_csv(csv_name, index=False)
     print(f"GET METADATA TIMES:\n\tinitialize partition: {partition_time - start_time}\tget point data: {partition_2_time - partition_time} \t(total): {partition_2_time - start_time}\n\tedge update: {edge_time - partition_2_time}\n\tmetadata for edges: {metadata_time - edge_time}\n")

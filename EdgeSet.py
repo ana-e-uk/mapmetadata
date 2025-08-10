@@ -30,7 +30,7 @@ class Edge:
         self.max_dist = 0
 
         # METADATA
-        self.inf_oneway = True
+        self.inf_oneway = None
         self.inf_expected_speed = None
         self.inf_speed_limit = None
 
@@ -86,7 +86,7 @@ class Edge:
     def get_oneway(self):
         """Use u to v/ v to u counts to determine if edge is a oneway"""
         if (self.u_to_v_count == 0) or (self.v_to_u_count == 0):
-            assert self.inf_oneway
+            self.inf_oneway = True
         else:
             self.inf_oneway = False
         return

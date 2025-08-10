@@ -21,7 +21,7 @@ print("\n\n% % % % % % % % % % %\n")
 result = subprocess.run([
     "python", "get_metadata.py",
     "--input", "jakarta2_standardized.csv",
-    "--output", "jakarta2_inf_metadata_4.csv"
+    "--output", "jakarta2_inf_metadata_5.csv"
 ], capture_output=True, text=True)
 
 print("STDOUT:", result.stdout)

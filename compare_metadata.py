@@ -1,7 +1,7 @@
 # %%
 import pandas as pd
 
-df = pd.read_csv('/home/spatialuser/uribe/mapmetadata/jakarta2_inf_metadata.csv')
+df = pd.read_csv('/home/spatialuser/uribe/mapmetadata/jakarta2_inf_metadata_4.csv')
 
 
 # %%
@@ -16,7 +16,7 @@ def resolve_oneway(group):
     else:
         return False
 # Group by 'osmid' and apply logic to 'oneway'
-result = df.groupby('osmid')['Oneway'].apply(resolve_oneway).reset_index()
+result = df.groupby('osmid')['inf_oneway'].apply(resolve_oneway).reset_index()
 
 
 # %%
@@ -47,8 +47,8 @@ data = list(result.itertuples(index=False, name=None))
 query = """
 UPDATE roads
 SET inf_oneway_direction = data.inf_oneway_direction
-FROM (VALUES %s) AS data(id, inf_oneway_direction)
-WHERE roads.id = data.id;
+FROM (VALUES %s) AS data(osmid, inf_oneway_direction)
+WHERE roads.id = data.osmid;
 """
 
 # Efficient batch insert
@@ -70,16 +70,16 @@ cur.execute(query2)
 result = cur.fetchone()
 print("Accuracy:", result[0])
 
-cur.close()
-conn.close()
-# %%
-def resolve_oneway_osm(group):
-    if False in group.values:
-        return False
-    elif True in group.values:
-        return True
-    else:
-        return None
+# cur.close()
+# conn.close()
+# # %%
+# def resolve_oneway_osm(group):
+#     if False in group.values:
+#         return False
+#     elif True in group.values:
+#         return True
+#     else:
+#         return None
 
 # agg_result = df.groupby('osmid').agg({
 #     'Oneway': resolve_oneway,
@@ -95,18 +95,18 @@ def resolve_oneway_osm(group):
 # print(f"Accuracy: {accuracy:.4f}")
 # # %%
 
-query = """
-SELECT id, osm_oneway_direction, inf_oneway_direction
-FROM your_table
-WHERE inf_oneway_direction IS NOT NULL;
-"""
+# query = """
+# SELECT id, osm_oneway_direction, inf_oneway_direction
+# FROM your_table
+# WHERE inf_oneway_direction IS NOT NULL;
+# """
 
 df_db = pd.read_sql_query(query, conn)
 conn.close()
 
 # Assuming you already have your main DataFrame (df_main)
 # Merge on 'id' column
-df_merged = pd.merge(df_main, df_db, on='id', how='left')
+# df_merged = pd.merge(df_main, df_db, on='id', how='left')
 
 # Now df_merged contains both original and joined data
-print(df_merged.head())
+# print(df_merged.head())
