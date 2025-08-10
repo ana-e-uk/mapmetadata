@@ -58,6 +58,7 @@ class Edge:
             # if cur_p["traj_id"] == self.prev_p["traj_id"]:
             if cur_p[0] == self.prev_p[0]:
                 # if(cur_p["timestamp"] - self.prev_p["timestamp"]).total_seconds() < 120:
+                # print(cur_p[1], type(cur_p[1]), self.prev_p[1])
                 if(cur_p[1] - self.prev_p[1]).total_seconds() < 120:    
                     # compute direction
                     if cur_p[11] < self.prev_p[11]:     # cur_p["u_dist"]
@@ -105,35 +106,98 @@ class Edge:
 
 class EdgeSet:
     def __init__(self):
-        self.edges = {}  # key: (u, v, k) -> value: Edge object
-        self.edge_keys = []
-    def create_edge(self,cur_p):
-        """
-        Given an edge index (u, v, k) and the current point
+        # key: (u, v, k) -> Edge object
+        self.edges = {}
+        # # record of all unique OSM IDs (as strings)
+        # self.edge_osmids = set()
 
-            - Add edge to set if it is not in it yet
-            - Update edge statistics given current point cur_p
+    def _ensure_edge_exists(self, idx, cur_p):
         """
-        # idx = (cur_p["u"], cur_p["v"], cur_p["k"])
-        idx = (cur_p[8], cur_p[9], cur_p[10])
-        if idx not in self.edges_keys:
+        Internal helper: create an Edge if it doesn't exist yet.
+        idx: tuple (u, v, k)
+        cur_p: current point (list/tuple)
+        """
+        if idx not in self.edges:
             self.edges[idx] = Edge(cur_p[8], cur_p[9], cur_p[10])
-            self.edge_keys.append(idx)
-            self.edges[idx].update(cur_p)
+            # self.edge_osmids.add(str(cur_p[3]))
 
-    def get_edge(self, u,v,k):
-        """Return edge at given index"""
-        return self.edges.get((u,v,k), None)
-    
+    def create_edge(self, cur_p):
+        """
+        Public method: ensure the edge exists, then update it.
+        """
+        idx = (cur_p[8], cur_p[9], cur_p[10])
+        self._ensure_edge_exists(idx, cur_p)
+        self.edges[idx].update(cur_p)
+
+    def update_edge(self, cur_p):
+        """
+        Alias for create_edge — accepts new points and ensures the
+        edge exists before updating.
+        """
+        self.create_edge(cur_p)
+
+    def get_edge(self, u, v, k):
+        """Return edge at given index or None if not present."""
+        return self.edges.get((u, v, k), None)
+
     def get_all_idx(self):
+        """Return all edge keys."""
         return self.edges.keys()
-    
-    def compute_metadata(self, u, v, k):
-        
-        edge = self.edges[(u,v,k)]
 
+    def compute_metadata(self, u, v, k):
+        """Compute and return metadata for a given edge."""
+        edge = self.edges[(u, v, k)]
         edge.get_oneway()
         edge.get_expected_speed()
         edge.get_speed_limit()
+        return (
+            edge.u,
+            edge.v,
+            edge.k,
+            edge.osmid,
+            edge.inf_oneway,
+            edge.osm_oneway,
+            edge.inf_expected_speed,
+            edge.inf_speed_limit,
+            edge.osm_maxspeed
+        )
 
-        return edge.osmid, edge.inf_oneway, edge.osm_oneway, edge.inf_expected_speed, edge.inf_speed_limit, edge.osm_maxspeed
+
+# import numpy as np
+
+# class EdgeSet:
+#     def __init__(self):
+#         self.edges = {}  # key: (u, v, k) -> value: Edge object
+#         self.edge_osmids = []
+
+#     def create_edge(self,cur_p):
+#         """
+#         Given an edge index (u, v, k) and the current point
+#             - Add edge to set if it is not in it yet
+#             - Update edge statistics given current point cur_p
+#         """
+#         idx = (cur_p[8], cur_p[9], cur_p[10])       # (cur_p["u"], cur_p["v"], cur_p["k"])
+#         cur_osm_id = str(cur_p[3])
+
+#         if cur_osm_id not in self.edge_osmids:
+#             self.edges[idx] = Edge(cur_p[8], cur_p[9], cur_p[10])
+#             self.edge_osmids.append(str(cur_osm_id))
+#         self.edges[idx].update(cur_p)
+#         return
+    
+#     def get_edge(self, u,v,k):
+#         """Return edge at given index"""
+#         return self.edges.get((u,v,k), None)
+    
+#     def get_all_idx(self):
+#         return self.edges.keys()
+    
+#     def compute_metadata(self, u, v, k):
+        
+#         edge = self.edges[(u,v,k)]
+
+#         edge.get_oneway()
+#         edge.get_expected_speed()
+#         edge.get_speed_limit()
+
+#         return edge.edge.osmid, edge.inf_oneway, edge.osm_oneway, edge.inf_expected_speed, edge.inf_speed_limit, edge.osm_maxspeed
