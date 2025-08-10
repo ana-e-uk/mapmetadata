@@ -28,9 +28,10 @@ class Edge:
         # SPEED VALS
         self.min_s = np.inf
         self.max_s = -1
-        self.q1 = 0
-        self.q2 = 0
-        self.q3 = 0
+        self.q1 = None
+        self.q2 = None
+        self.q3 = None
+        self.four_points = False
 
         # TO CALCULATE METADATA
         self.u_to_v_count = 0
@@ -43,57 +44,63 @@ class Edge:
         self.inf_speed_limit = None
         self.inf_lanes = None
 
+    def get_direction_counts(self, cur_p):
+        if(cur_p[1] - self.prev_p[1]).total_seconds() < 120:    # cur["timestamp"]  
+            # compute direction
+            if cur_p[11] < self.prev_p[11]:     # cur_p["u_dist"]
+                if cur_p[12] > self.prev_p[12]: # cur_p["v_dist"]
+                    self.v_to_u_count += 1
+                else:
+                    self.u_to_v_count += 1
+            else:
+                if cur_p[12] > self.prev_p[12]:
+                    self.v_to_u_count += 1
+                else:
+                    self.u_to_v_count += 1
+        return 
+    
+    def get_quantile_vals(self, s):
+        if self.four_points:
+            self.q1 = round(np.quantile([self.q1,s],q=0.25), self.round_to)
+            self.q2 = round(np.quantile([self.q2,s],q=0.5), self.round_to)
+            self.q3 = round(np.quantile([self.q3,s],q=0.75), self.round_to)
+        elif self.q1 is None:
+            self.q1 = s
+        elif self.q2 is None:
+            self.q2 = s
+        elif self.q3 is None: 
+            self.q3 = s
+        else:
+            self.four_points = True
+            first_four = [self.q1, self.q2, self.q3, s]
+            self.q1 = round(np.quantile(first_four, q=0.25))
+            self.q2 = round(np.quantile(first_four, q=0.5))
+            self.q3 = round(np.quantile(first_four, q=0.75))
+    
     def update(self, cur_p):
         """Update edge statistics using current point"""
 
         # speed extrema
         s = cur_p[2] # cur_p["speed"]
-        self.min_s = min(self.min_s, s)
-        self.max_s = min(max(self.max_s, s), 120)
-
-        # speed quantiles
-        #   computed using previous quantile value and new speed value
-        #   this got similar results to updating using the min and max alongise points
-        self.q1 = round(np.quantile([self.q1,s],q=0.25), self.round_to)
-        self.q2 = round(np.quantile([self.q2,s],q=0.5), self.round_to)
-        self.q3 = round(np.quantile([self.q3,s],q=0.75), self.round_to)
+        self.min_s = round(min(self.min_s, s), self.round_to)
+        self.max_s = round(min(max(self.max_s, s),120), self.round_to)
 
         # max distance used to calculate number of lanes
         self.max_dist = max(self.max_dist, cur_p[13])    #cur_p["dist"])
 
-        # direction of trajectory
-        # check if points are from same trajectory and w/in 2 mins
+        # direction from two points in same trajectory
         if self.prev_p is not None:
             if cur_p[0] == self.prev_p[0]:  # cur["traj_id"]
-                if(cur_p[1] - self.prev_p[1]).total_seconds() < 120:    # cur["timestamp"]  
-                    # compute direction
-                    if cur_p[11] < self.prev_p[11]:     # cur_p["u_dist"]
-                        if cur_p[12] > self.prev_p[12]: # cur_p["v_dist"]
-                            self.v_to_u_count += 1
-                        else:
-                            self.u_to_v_count += 1
-                    else:
-                        if cur_p[12] > self.prev_p[12]:
-                            self.v_to_u_count += 1
-                        else:
-                            self.u_to_v_count += 1
+                self.get_direction_counts(cur_p)
+            
+        # speed quantiles
+        self.get_quantile_vals(s)
 
         self.osmid_l.append(cur_p[3])
         self.osm_hway_l.append(cur_p[4])
         self.osm_maxspeed_l.append(cur_p[5])
         self.osm_oneway_l.append(cur_p[6])
         self.osm_lanes_l.append(cur_p[7])
-
-        # if self.osmid is None:
-        #     self.osmid = cur_p[3]
-        # if self.osm_hway is None:
-        #     self.osm_hway = cur_p[4]
-        # if self.osm_maxspeed == np.nan:
-        #     self.osm_maxspeed = cur_p[5]
-        # if self.osm_oneway is None:
-        #     self.osm_oneway = cur_p[6]
-        # if self.osm_lanes == np.nan:
-        #     self.osm_lanes = cur_p[7]
 
         self.prev_p = cur_p
 
@@ -202,6 +209,7 @@ class EdgeSet:
             cur_e.osm_maxspeed,
             cur_e.inf_lanes,
             cur_e.osm_lanes,
+            cur_e.osm_highway,
             cur_e.count,
             cur_e.min_s,
             cur_e.max_s,
