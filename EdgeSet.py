@@ -24,7 +24,7 @@ class Edge:
         self.max_dist = 0
 
         # METADATA
-        self.oneway = True
+        self.inf_oneway = True
         self.expected_speed = None
         self.speed_limit = None
 
@@ -55,13 +55,13 @@ class Edge:
                 # if(cur_p["timestamp"] - self.prev_p["timestamp"]).total_seconds() < 120:
                 if(cur_p[1] - self.prev_p[1]).total_seconds() < 120:    
                     # compute direction
-                    if cur_p[7] < self.prev_p[7]:
-                        if cur_p[8] > self.prev_p[8]:
+                    if cur_p[11] < self.prev_p[11]:     # cur_p["u_dist"]
+                        if cur_p[12] > self.prev_p[12]: # cur_p["v_dist"]
                             self.v_to_u_count += 1
                         else:
                             self.u_to_v_count += 1
                     else:
-                        if cur_p[8] > self.prev_p[8]:
+                        if cur_p[12] > self.prev_p[12]:
                             self.v_to_u_count += 1
                         else:
                             self.u_to_v_count += 1
@@ -106,9 +106,9 @@ class EdgeSet:
             - Update edge statistics given current point cur_p
         """
         # idx = (cur_p["u"], cur_p["v"], cur_p["k"])
-        idx = (cur_p[4], cur_p[5], cur_p[6])
+        idx = (cur_p[8], cur_p[9], cur_p[10])
         if idx not in self.edges:
-            self.edges[idx] = Edge(cur_p[4], cur_p[5], cur_p[6])
+            self.edges[idx] = Edge(cur_p[8], cur_p[9], cur_p[10])
         self.edges[idx].update(cur_p)
 
     def get_edge(self, u,v,k):
