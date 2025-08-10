@@ -42,7 +42,7 @@ def main():
 
         es = EdgeSet()
         for p in point_data: 
-            es.update_edge(p)
+            es.create_edge(p)
         edge_time = time.time()
 
         edge_metadata = []

@@ -7,7 +7,13 @@ class Edge:
         self.u = u
         self.v = v
         self.k = k
+
         self.osmid = None
+        self.osm_hway = None
+        self.osm_maxspeed = np.nan
+        self.osm_oneway = None
+        self.osm_lanes = np.nan
+
         self.prev_p = None
         self.count = 0
 
@@ -25,13 +31,12 @@ class Edge:
 
         # METADATA
         self.inf_oneway = True
-        self.expected_speed = None
-        self.speed_limit = None
+        self.inf_expected_speed = None
+        self.inf_speed_limit = None
 
     def update(self, cur_p):
         """Update edge statistics using current point"""
-        # [self.traj_ids, self.timestamps, self.speeds, osmid, hway, maxspeed, oneway, lanes, u, v, k, u_dist, v_dist, distances]
-        
+
         # speed extrema
         s = cur_p[2] # cur_p["speed"]
         self.min_s = min(self.min_s, s)
@@ -65,10 +70,14 @@ class Edge:
                             self.v_to_u_count += 1
                         else:
                             self.u_to_v_count += 1
-        self.prev_p = cur_p
-
-        if self.osmid is None:
+        else:
             self.osmid = cur_p[3]
+            self.osm_hway = cur_p[4]
+            self.osm_maxspeed = cur_p[5]
+            self.osm_oneway = cur_p[6]
+            self.osm_lanes = cur_p[7]
+
+        self.prev_p = cur_p
 
         # updating number of points for edge
         self.count += 1
@@ -76,14 +85,14 @@ class Edge:
     def get_oneway(self):
         """Use u to v/ v to u counts to determine if edge is a oneway"""
         if (self.u_to_v_count == 0) or (self.v_to_u_count == 0):
-            assert self.oneway
+            assert self.inf_oneway
         else:
-            self.oneway = False
+            self.inf_oneway = False
         return
 
     def get_expected_speed(self):
         """Expected speed = q2"""
-        self.expected_speed= round(self.q2,3)
+        self.inf_expected_speed= round(self.q2,3)
 
     def get_speed_limit(self):
         """
@@ -91,14 +100,14 @@ class Edge:
             Guess: the closest multiple of ten greater than the maximum speed observed
         """
         t = np.trunc(self.max_s/10)
-        self.speed_limit = int((t*10) + 10)
+        self.inf_speed_limit = int((t*10) + 10)
 
 
 class EdgeSet:
     def __init__(self):
         self.edges = {}  # key: (u, v, k) -> value: Edge object
 
-    def update_edge(self,cur_p):
+    def create_edge(self,cur_p):
         """
         Given an edge index (u, v, k) and the current point
 
@@ -126,4 +135,4 @@ class EdgeSet:
         edge.get_expected_speed()
         edge.get_speed_limit()
 
-        return edge.osmid, edge.oneway, edge.expected_speed, edge.speed_limit 
+        return edge.osmid, edge.inf_oneway, edge.osm_oneway, edge.inf_expected_speed, edge.inf_speed_limit, edge.osm_maxspeed
