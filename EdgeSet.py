@@ -34,7 +34,7 @@ class Edge:
         # TO CALCULATE METADATA
         self.u_to_v_count = 0
         self.v_to_u_count = 0
-        self.max_dist = 0
+        self.max_dist = 0       # max_dist is in km
 
         # METADATA
         self.inf_oneway = None
@@ -107,12 +107,20 @@ class Edge:
         self.osm_oneway = Counter(self.osm_oneway_l).most_common(1)[0][0]
         self.osm_lanes = Counter(self.osm_lanes_l).most_common(1)[0][0]
 
+        print(f"\n\tGET_OSM_CONSENSUS:\nosmid list: {np.unique(self.osm_osm_l)}")
+        print(f"\nosm highway list: {np.unique(self.osm_hway_l)}")
+        print(f"\nosm maxspeed list: {np.unique(self.osm_maxspeed_l)}")
+        print(f"\nosm oneway list: {np.unique(self.osm_oneway_l)}")
+        print(f"\nosm lanes list: {np.unique(self.osm_lanes_l)}")
+
     def get_oneway(self):
         """Use u to v/ v to u counts to determine if edge is a oneway"""
         if (self.u_to_v_count == 0) or (self.v_to_u_count == 0):
             self.inf_oneway = True
         else:
             self.inf_oneway = False
+
+        print(f"\n\tGET_ONEWAY:\nu -> v: {self.u_to_v_count}\tv -> u: {self.v_to_u_count} \tinf_oneway: {self.inf_oneway}")
         return
 
     def get_expected_speed(self):
@@ -136,7 +144,7 @@ class Edge:
         Returns number of 12ft lanes that can fit w/in
             the largest distance from point to edge * 2
         """
-        n_lanes = (np.ceil(self.max_dist) * 2)/ 3.6  # avg lane width ~= 3.6 meters
+        n_lanes = (np.ceil(self.max_dist*1000) * 2)/ 3.6  # avg lane width ~= 3.6 meters
         self.inf_lanes = int(max(np.ceil(n_lanes), 1))
     
     def update_number_of_lanes(self):
@@ -171,6 +179,7 @@ class EdgeSet:
 
     def get_all_idx(self):
         """Return all edge keys."""
+        print(f"\n\tGET_ALL_IDX:\nself.edges.keys(): {self.edges.keys()}")
         return self.edges.keys()
 
     def compute_metadata(self, u, v, k):
