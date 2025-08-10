@@ -40,6 +40,8 @@ def main():
         point_data = partition.get_point_info()
         partition_2_time = time.time()
 
+        point_data.to_csv("partition_data.csv", index=False)
+
         es = EdgeSet()
         for p in point_data:
             es.create_edge(p)

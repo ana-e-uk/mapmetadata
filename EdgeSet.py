@@ -106,7 +106,7 @@ class Edge:
 class EdgeSet:
     def __init__(self):
         self.edges = {}  # key: (u, v, k) -> value: Edge object
-
+        self.edge_keys = []
     def create_edge(self,cur_p):
         """
         Given an edge index (u, v, k) and the current point
@@ -116,10 +116,10 @@ class EdgeSet:
         """
         # idx = (cur_p["u"], cur_p["v"], cur_p["k"])
         idx = (cur_p[8], cur_p[9], cur_p[10])
-        print(f"edge keys: {self.edges.keys}\n")
-        if idx not in self.edges.keys:
+        if idx not in self.edges_keys:
             self.edges[idx] = Edge(cur_p[8], cur_p[9], cur_p[10])
-        self.edges[idx].update(cur_p)
+            self.edge_keys.append(idx)
+            self.edges[idx].update(cur_p)
 
     def get_edge(self, u,v,k):
         """Return edge at given index"""
