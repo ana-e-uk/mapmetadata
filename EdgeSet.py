@@ -33,7 +33,7 @@ class Edge:
         self.q3 = None
         self.four_points = False
 
-        # TO CALCULATE METADATA
+        # TO CALCULATE ONEWAY, LANES
         self.u_to_v_count = 0
         self.v_to_u_count = 0
         self.max_dist = 0       # max_dist is in km
@@ -115,11 +115,11 @@ class Edge:
         self.osm_oneway = Counter(self.osm_oneway_l).most_common(1)[0][0]
         self.osm_lanes = Counter(self.osm_lanes_l).most_common(1)[0][0]
 
-        print(f"\n\tGET_OSM_CONSENSUS:\nosmid list: {np.unique(self.osmid_l)}")
-        print(f"\nosm highway list: {np.unique(self.osm_hway_l)}")
-        print(f"\nosm maxspeed list: {np.unique(self.osm_maxspeed_l)}")
-        print(f"\nosm oneway list: {np.unique(self.osm_oneway_l)}")
-        print(f"\nosm lanes list: {np.unique(self.osm_lanes_l)}")
+        # print(f"\n\tGET_OSM_CONSENSUS:\nosmid list: {np.unique(self.osmid_l)}")
+        # print(f"\nosm highway list: {np.unique(self.osm_hway_l)}")
+        # print(f"\nosm maxspeed list: {np.unique(self.osm_maxspeed_l)}")
+        # print(f"\nosm oneway list: {np.unique(self.osm_oneway_l)}")
+        # print(f"\nosm lanes list: {np.unique(self.osm_lanes_l)}")
 
     def get_oneway(self):
         """Use u to v/ v to u counts to determine if edge is a oneway"""
@@ -128,7 +128,7 @@ class Edge:
         else:
             self.inf_oneway = False
 
-        print(f"\n\tGET_ONEWAY:\nu -> v: {self.u_to_v_count}\tv -> u: {self.v_to_u_count} \tinf_oneway: {self.inf_oneway}")
+        # print(f"\n\tGET_ONEWAY:\nu -> v: {self.u_to_v_count}\tv -> u: {self.v_to_u_count} \tinf_oneway: {self.inf_oneway}")
         return
 
     def get_expected_speed(self):
@@ -141,8 +141,11 @@ class Edge:
             Guess: the closest multiple of ten greater than the maximum speed observed
             Check: if the max value observed is 40km or greater than q3 value, use q3 value as max
         """
-        if (self.max_s - self.q3) >= 40:
-            t = np.trunc(self.q3/10)
+        if self.q3:
+            if (self.max_s - self.q3) >= 40:
+                t = np.trunc(self.q3/10)
+            else:
+                t = np.trunc(self.max_s/10)
         else:
             t = np.trunc(self.max_s/10)
         self.inf_speed_limit = int((t*10) + 10)
@@ -209,13 +212,14 @@ class EdgeSet:
             cur_e.osm_maxspeed,
             cur_e.inf_lanes,
             cur_e.osm_lanes,
-            cur_e.osm_highway,
+            cur_e.osm_hway,
             cur_e.count,
             cur_e.min_s,
             cur_e.max_s,
             cur_e.q1,
             cur_e.q2,
-            cur_e.q3
+            cur_e.q3,
+            (cur_e.u_to_v_count, cur_e.v_to_u_count)
         )
 
 
