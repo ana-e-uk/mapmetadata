@@ -34,8 +34,8 @@ class Edge:
         self.four_points = False
 
         # TO CALCULATE ONEWAY, LANES
-        self.u_to_v_count = 0
-        self.v_to_u_count = 0
+        self.u_to_v_count = None
+        self.v_to_u_count = None
         self.max_dist = 0       # max_dist is in km
 
         # METADATA
@@ -49,14 +49,26 @@ class Edge:
             # compute direction
             if cur_p[11] < self.prev_p[11]:     # cur_p["u_dist"]
                 if cur_p[12] > self.prev_p[12]: # cur_p["v_dist"]
-                    self.v_to_u_count += 1
+                    if self.v_to_u_count:
+                        self.v_to_u_count += 1
+                    else:
+                        self.v_to_u_count = 1
                 else:
-                    self.u_to_v_count += 1
+                    if self.u_to_v_count:
+                        self.u_to_v_count += 1
+                    else:
+                        self.u_to_v_count = 1
             else:
                 if cur_p[12] > self.prev_p[12]:
-                    self.v_to_u_count += 1
+                    if self.v_to_u_count:
+                        self.v_to_u_count += 1
+                    else:
+                        self.v_to_u_count = 1
                 else:
-                    self.u_to_v_count += 1
+                    if self.u_to_v_count:
+                        self.u_to_v_count += 1
+                    else:
+                        self.u_to_v_count = 1
         return 
     
     def get_quantile_vals(self, s):
@@ -123,10 +135,17 @@ class Edge:
 
     def get_oneway(self):
         """Use u to v/ v to u counts to determine if edge is a oneway"""
-        if (self.u_to_v_count == 0) or (self.v_to_u_count == 0):
-            self.inf_oneway = True
-        else:
-            self.inf_oneway = False
+        if self.u_to_v_count and self.v_to_u_count:
+
+            compare_counts = np.abs(1 - (self.u_to_v_count / self.v_to_u_count))
+
+            if (self.u_to_v_count == 0) or (self.v_to_u_count == 0):
+                self.inf_oneway = True
+                # TODO: this sets two-ways as oneways if we do not have enough samples
+            elif compare_counts > 0.5:
+                self.inf_oneway = True
+            else:
+                self.inf_oneway = False
 
         # print(f"\n\tGET_ONEWAY:\nu -> v: {self.u_to_v_count}\tv -> u: {self.v_to_u_count} \tinf_oneway: {self.inf_oneway}")
         return

@@ -23,7 +23,7 @@ time_str = time.strftime("%Y%m%d-%H%M%S")
 result = subprocess.run([
     "python", "get_metadata.py",
     "--input", "jakarta2_standardized.csv",
-    "--output", f"jakarta_mini_inf_metadata_{time_str}.csv"
+    "--output", f"jakarta_inf_metadata_ratio_cutoff_{time_str}.csv"
 ], capture_output=True, text=True)
 
 print("STDOUT:", result.stdout)

@@ -32,13 +32,16 @@ def main():
 
     args = parser.parse_args()
 
-    # try:
+    # try: #TODO: add this back
     df = pd.read_csv(args.input)
     start_time = time.time()
     partition = DataPartition(df=df)
     partition_time = time.time()
     point_data = partition.get_point_info()     # np.stack([self.traj_ids, self.timestamps, self.speeds, osmid, hway, maxspeed, oneway, lanes, u, v, k, u_dist, v_dist, distances]).transpose()
     partition_2_time = time.time()
+
+    np.save('point_data.npy', point_data)
+    # point_data = np.load('point_data.npy')
 
     es = EdgeSet()
     for p in point_data:
