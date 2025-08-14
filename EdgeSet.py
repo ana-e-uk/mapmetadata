@@ -145,6 +145,8 @@ class Edge:
                 self.inf_oneway = True
                 # TODO: this sets two-ways as oneways if we do not have enough samples
             elif ratio < 0.55:
+                if sm + lg < 11:    # small counts are exception, not enough data to say if count imbalance is error
+                    self.inf_oneway = False
                 self.inf_oneway = True  # one direction has ~less than half the counts as the other
             else:
                 self.inf_oneway = False 
