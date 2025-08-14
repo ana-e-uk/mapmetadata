@@ -32,16 +32,16 @@ def main():
 
     args = parser.parse_args()
 
-    # # try: #TODO: add this back
-    # df = pd.read_csv(args.input)
+    # try: #TODO: add this back
+    df = pd.read_csv(args.input)
     start_time = time.time()
-    # partition = DataPartition(df=df)
-    # partition_time = time.time()
-    # point_data = partition.get_point_info()     # np.stack([self.traj_ids, self.timestamps, self.speeds, osmid, hway, maxspeed, oneway, lanes, u, v, k, u_dist, v_dist, distances]).transpose()
-    # partition_2_time = time.time()
+    partition = DataPartition(df=df)
+    partition_time = time.time()
+    point_data = partition.get_point_info()     # np.stack([self.traj_ids, self.timestamps, self.speeds, osmid, hway, maxspeed, oneway, lanes, u, v, k, u_dist, v_dist, distances]).transpose()
+    partition_2_time = time.time()
 
-    # np.save('point_data.npy', point_data)
-    point_data = np.load('point_data.npy', allow_pickle=True)
+    np.save(f'point_data_{args.input}_.npy', point_data)
+    # point_data = np.load('point_data.npy', allow_pickle=True)
 
     es = EdgeSet()
     for p in point_data:
@@ -55,9 +55,9 @@ def main():
     metadata_df = pd.DataFrame(edge_metadata, columns=["u", "v", "k", "osmid", "inf_oneway", "osm_oneway", "inf_exp_speed", "inf_speed_limit", "osm_maxspeed", "inf_lanes", "osm_lanes", "osm_highway", "count", "min_s", "max_s", "q1", "q2", "q3", "uv_vu"])
     csv_name = get_outfile_name(args.output)
     metadata_df.to_csv(csv_name, index=False)
-    # print(f"GET METADATA TIMES:\n\tinitialize partition: {partition_time - start_time}\tget point data: {partition_2_time - partition_time} \t(total): {partition_2_time - start_time}\n\tedge update: {edge_time - partition_2_time}\n\tmetadata for edges: {metadata_time - edge_time}\n")
-    # print(f"\tTOTAL: minutes {round((metadata_time - start_time)/60, 3)}")
-    print(f"Edge time: {edge_time - start_time}\nMetadata time: {metadata_time - edge_time}\nTOTAL mins: {round((metadata_time - start_time)/60, 3)}")
+    print(f"GET METADATA TIMES:\n\tinitialize partition: {partition_time - start_time}\tget point data: {partition_2_time - partition_time} \t(total): {partition_2_time - start_time}\n\tedge update: {edge_time - partition_2_time}\n\tmetadata for edges: {metadata_time - edge_time}\n")
+    print(f"\tTOTAL: minutes {round((metadata_time - start_time)/60, 3)}")
+    # print(f"Edge time: {edge_time - start_time}\nMetadata time: {metadata_time - edge_time}\nTOTAL mins: {round((metadata_time - start_time)/60, 3)}")
     print("\n############################ END ################################")
     # except Exception as e:
     #     print(f"Failed to process the file: {e}")

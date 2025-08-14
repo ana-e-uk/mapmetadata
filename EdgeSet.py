@@ -144,10 +144,10 @@ class Edge:
             if (self.u_to_v_count == 0) or (self.v_to_u_count == 0):
                 self.inf_oneway = True
                 # TODO: this sets two-ways as oneways if we do not have enough samples
-            elif ratio < 0.5:   # one direction las less than half the counts as the other
-                self.inf_oneway = True
+            elif ratio < 0.55:
+                self.inf_oneway = True  # one direction has ~less than half the counts as the other
             else:
-                self.inf_oneway = False
+                self.inf_oneway = False 
         return
 
     def get_expected_speed(self):
