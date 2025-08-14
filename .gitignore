@@ -1,6 +1,7 @@
 # Data files
 data/
 *.csv
+*.npy
 
 # Docker 
 Dockerfile

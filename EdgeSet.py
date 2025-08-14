@@ -137,17 +137,17 @@ class Edge:
         """Use u to v/ v to u counts to determine if edge is a oneway"""
         if self.u_to_v_count and self.v_to_u_count:
 
-            compare_counts = np.abs(1 - (self.u_to_v_count / self.v_to_u_count))
+            sm = min(self.u_to_v_count, self.v_to_u_count)
+            lg = max(self.u_to_v_count, self.v_to_u_count)
+            ratio = sm/lg
 
             if (self.u_to_v_count == 0) or (self.v_to_u_count == 0):
                 self.inf_oneway = True
                 # TODO: this sets two-ways as oneways if we do not have enough samples
-            elif compare_counts > 0.5:
+            elif ratio < 0.5:   # one direction las less than half the counts as the other
                 self.inf_oneway = True
             else:
                 self.inf_oneway = False
-
-        # print(f"\n\tGET_ONEWAY:\nu -> v: {self.u_to_v_count}\tv -> u: {self.v_to_u_count} \tinf_oneway: {self.inf_oneway}")
         return
 
     def get_expected_speed(self):
